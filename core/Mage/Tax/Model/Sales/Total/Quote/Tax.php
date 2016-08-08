@@ -10,18 +10,18 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@magento.com so we can send you a copy immediately.
+ * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade Magento to newer
  * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magento.com for more information.
+ * needs please refer to http://www.magentocommerce.com for more information.
  *
  * @category    Mage
  * @package     Mage_Tax
- * @copyright  Copyright (c) 2006-2015 X.commerce, Inc. (http://www.magento.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright   Copyright (c) 2013 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 /**
@@ -185,14 +185,10 @@ class Mage_Tax_Model_Sales_Total_Quote_Tax extends Mage_Sales_Model_Quote_Addres
         );
 
         if ($this->_config->priceIncludesTax($this->_store)) {
-            if ($this->_helper->isCrossBorderTradeEnabled($this->_store)) {
-                $this->_areTaxRequestsSimilar = true;
-            } else {
-                $this->_areTaxRequestsSimilar = $this->_calculator->compareRequests(
-                    $this->_calculator->getRateOriginRequest($this->_store),
-                    $request
-                );
-            }
+            $this->_areTaxRequestsSimilar = $this->_calculator->compareRequests(
+                $this->_calculator->getRateOriginRequest($this->_store),
+                $request
+            );
         }
 
         switch ($this->_config->getAlgorithm($this->_store)) {
@@ -554,7 +550,7 @@ class Mage_Tax_Model_Sales_Total_Quote_Tax extends Mage_Sales_Model_Quote_Addres
                 $baseDiscountAmount = $item->getBaseDiscountAmount() / $qty;
 
                 //We want to remove weee
-                if ($isWeeeEnabled && $this->_weeeHelper->includeInSubtotal()) {
+                if ($isWeeeEnabled) {
                     $discountAmount = $discountAmount - $item->getWeeeDiscount() / $qty;
                     $baseDiscountAmount = $baseDiscountAmount - $item->getBaseWeeeDiscount() / $qty;
                 }
@@ -798,7 +794,7 @@ class Mage_Tax_Model_Sales_Total_Quote_Tax extends Mage_Sales_Model_Quote_Addres
                 $discountAmount = $item->getDiscountAmount();
                 $baseDiscountAmount = $item->getBaseDiscountAmount();
 
-                if ($isWeeeEnabled && $this->_weeeHelper->includeInSubtotal()) {
+                if ($isWeeeEnabled) {
                     $discountAmount = $discountAmount - $item->getWeeeDiscount();
                     $baseDiscountAmount = $baseDiscountAmount - $item->getBaseWeeeDiscount();
                 }
@@ -1088,7 +1084,7 @@ class Mage_Tax_Model_Sales_Total_Quote_Tax extends Mage_Sales_Model_Quote_Addres
                 }
 
                 //We remove weee discount from discount if weee is not taxed
-                if ($isWeeeEnabled && $this->_weeeHelper->includeInSubtotal()) {
+                if ($isWeeeEnabled) {
                     $discount = $discount - $item->getWeeeDiscount();
                     $baseDiscount = $baseDiscount - $item->getBaseWeeeDiscount();
                 }
@@ -1356,9 +1352,7 @@ class Mage_Tax_Model_Sales_Total_Quote_Tax extends Mage_Sales_Model_Quote_Addres
     {
         $isWeeeTaxAlreadyIncluded = $this->_weeeHelper->isTaxIncluded($this->_store);
 
-        $sameRateAsStore = $this->_helper->isCrossBorderTradeEnabled($this->_store) ||
-                ($rate == $this->_calculator->getStoreRateForItem($item));
-        if ($sameRateAsStore && $isWeeeTaxAlreadyIncluded) {
+        if ($rate == $this->_calculator->getStoreRateForItem($item) && $isWeeeTaxAlreadyIncluded) {
             if (!$discountAmount || $discountAmount <= 0) {
                 //We want to skip the re calculation and return the difference
                 return max($weeeAmountIncludingTax - $weeeAmountExclTax, 0);

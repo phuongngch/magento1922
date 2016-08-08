@@ -10,18 +10,18 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@magento.com so we can send you a copy immediately.
+ * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade Magento to newer
  * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magento.com for more information.
+ * needs please refer to http://www.magentocommerce.com for more information.
  *
  * @category    Mage
  * @package     Mage_Sales
- * @copyright  Copyright (c) 2006-2015 X.commerce, Inc. (http://www.magento.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright   Copyright (c) 2013 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 
@@ -54,19 +54,17 @@ class Mage_Sales_Model_Order_Creditmemo_Total_Tax extends Mage_Sales_Model_Order
             }
             $orderItemTax     = $orderItem->getTaxInvoiced();
             $baseOrderItemTax = $orderItem->getBaseTaxInvoiced();
-            $orderItemHiddenTax = $orderItem->getHiddenTaxInvoiced();
-            $baseOrderItemHiddenTax = $orderItem->getBaseHiddenTaxInvoiced();
             $orderItemQty     = $orderItem->getQtyInvoiced();
 
-            if (($orderItemTax || $orderItemHiddenTax) && $orderItemQty) {
+            if ($orderItemTax && $orderItemQty) {
                 /**
                  * Check item tax amount
                  */
 
                 $tax            = $orderItemTax - $orderItem->getTaxRefunded();
                 $baseTax        = $baseOrderItemTax - $orderItem->getTaxRefunded();
-                $hiddenTax      = $orderItemHiddenTax - $orderItem->getHiddenTaxRefunded();
-                $baseHiddenTax  = $baseOrderItemHiddenTax - $orderItem->getBaseHiddenTaxRefunded();
+                $hiddenTax      = $orderItem->getHiddenTaxAmount() - $orderItem->getHiddenTaxRefunded();
+                $baseHiddenTax  = $orderItem->getBaseHiddenTaxAmount() - $orderItem->getBaseHiddenTaxRefunded();
                 if (!$item->isLast()) {
                     $availableQty  = $orderItemQty - $orderItem->getQtyRefunded();
                     $tax           = $creditmemo->roundPrice($tax / $availableQty * $item->getQty());
@@ -149,12 +147,11 @@ class Mage_Sales_Model_Order_Creditmemo_Total_Tax extends Mage_Sales_Model_Order
             $baseTotalHiddenTax += $baseShippingHiddenTaxAmount;
         }
 
-        $allowedTax = $order->getTaxInvoiced() - $order->getTaxRefunded() - $creditmemo->getTaxAmount();
-        $allowedBaseTax = $order->getBaseTaxInvoiced() - $order->getBaseTaxRefunded()
-                - $creditmemo->getBaseTaxAmount();
-        $allowedHiddenTax = $order->getHiddenTaxInvoiced() + $order->getShippingHiddenTaxAmount()
+        $allowedTax = $order->getTaxAmount() - $order->getTaxRefunded();
+        $allowedBaseTax = $order->getBaseTaxAmount() - $order->getBaseTaxRefunded();
+        $allowedHiddenTax = $order->getHiddenTaxAmount() + $order->getShippingHiddenTaxAmount()
             - $order->getHiddenTaxRefunded() - $order->getShippingHiddenTaxRefunded();
-        $allowedBaseHiddenTax = $order->getBaseHiddenTaxInvoiced() + $order->getBaseShippingHiddenTaxAmount()
+        $allowedBaseHiddenTax = $order->getBaseHiddenTaxAmount() + $order->getBaseShippingHiddenTaxAmount()
             - $order->getBaseHiddenTaxRefunded() - $order->getBaseShippingHiddenTaxRefunded();
 
 

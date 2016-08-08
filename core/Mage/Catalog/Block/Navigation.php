@@ -10,18 +10,18 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@magento.com so we can send you a copy immediately.
+ * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade Magento to newer
  * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magento.com for more information.
+ * needs please refer to http://www.magentocommerce.com for more information.
  *
  * @category    Mage
  * @package     Mage_Catalog
- * @copyright  Copyright (c) 2006-2015 X.commerce, Inc. (http://www.magento.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright   Copyright (c) 2013 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 
@@ -242,7 +242,7 @@ class Mage_Catalog_Block_Navigation extends Mage_Core_Block_Template
             return '';
         }
         $html = array();
-
+        $currentCategory = Mage::registry('current_category');
         // get all children
         // If Flat Data enabled then use it but only on frontend
         $flatHelper = Mage::helper('catalog/category_flat');
@@ -329,12 +329,17 @@ class Mage_Catalog_Block_Navigation extends Mage_Core_Block_Template
             if ($childrenWrapClass) {
                 $html[] = '<div class="' . $childrenWrapClass . '">';
             }
-            $html[] = '<ul class="level' . $level . '">';
+			
+			 $style="";
+           // if( isset($currentCategory) && ($currentCategory->getId()== $category->getId()))
+             //   $style='style="display: block;"';
+            $html[] = '<ul class="level' . $level .  '" '.$style.'>';
             $html[] = $htmlChildren;
             $html[] = '</ul>';
             if ($childrenWrapClass) {
                 $html[] = '</div>';
             }
+			
         }
 
         $html[] = '</li>';
@@ -462,7 +467,11 @@ class Mage_Catalog_Block_Navigation extends Mage_Core_Block_Template
                 true
             );
             $j++;
+    
         }
+
+
+
 
         return $html;
     }

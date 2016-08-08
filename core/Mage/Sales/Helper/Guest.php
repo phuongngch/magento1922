@@ -10,18 +10,18 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@magento.com so we can send you a copy immediately.
+ * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade Magento to newer
  * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magento.com for more information.
+ * needs please refer to http://www.magentocommerce.com for more information.
  *
  * @category    Mage
  * @package     Mage_Sales
- * @copyright  Copyright (c) 2006-2015 X.commerce, Inc. (http://www.magento.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright   Copyright (c) 2013 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 /**
@@ -96,22 +96,17 @@ class Mage_Sales_Helper_Guest extends Mage_Core_Helper_Data
             }
 
             if (!$errors) {
-                $toCookie = base64_encode($order->getProtectCode() . ':' . $incrementId);
+                $toCookie = base64_encode($order->getProtectCode());
                 Mage::getSingleton('core/cookie')->set($this->_cookieName, $toCookie, $this->_lifeTime, '/');
             }
         } elseif (Mage::getSingleton('core/cookie')->get($this->_cookieName)) {
-            $fromCookie = Mage::getSingleton('core/cookie')->get($this->_cookieName);
-            $cookieData = explode(':', base64_decode($fromCookie));
-            $protectCode = isset($cookieData[0]) ? $cookieData[0] : null;
-            $incrementId = isset($cookieData[1]) ? $cookieData[1] : null;
+            $fromCookie     = Mage::getSingleton('core/cookie')->get($this->_cookieName);
+            $protectCode    = base64_decode($fromCookie);
 
-            if (!empty($protectCode) && !empty($incrementId)) {
-                $order->loadByIncrementId($incrementId);
-                if ($order->getProtectCode() == $protectCode) {
-                    Mage::getSingleton('core/cookie')->renew($this->_cookieName, $this->_lifeTime, '/');
-                } else {
-                    $errors = true;
-                }
+            if (!empty($protectCode)) {
+                $order->loadByAttribute('protect_code', $protectCode);
+
+                Mage::getSingleton('core/cookie')->renew($this->_cookieName, $this->_lifeTime, '/');
             } else {
                 $errors = true;
             }
